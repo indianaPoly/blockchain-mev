@@ -2,6 +2,7 @@
 
 import { ethers } from 'ethers';
 import EventEmitter from 'events';
+import dotenv from 'dotenv';
 
 import { Bundler } from './bundler.js';
 import { logger } from './constants.js';
@@ -11,6 +12,7 @@ import { loadAllPoolsFromV3 } from './pools.js';
 import { streamNewBlocks, streamPendingTransactions } from './streams.js';
 import { getTouchedPoolReserves } from './utils.js';
 
+dotenv.config();
 export const main = async () => {
     // 이더리움 메인넷에서 진행
     const HTTPSURL = `https://eth-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`;
@@ -24,7 +26,7 @@ export const main = async () => {
     const factoryAddresses = ['0x1F98431c8aD98523631AE4a59f267346ea31F984'];
     const factoryBlocks = [12469621];
 
-    // Uniswap V3 pool의 정보를 가져옵니다.
+    //Uniswap V3 pool의 정보를 가져옵니다.
     let pools = await loadAllPoolsFromV3(HTTPSURL, factoryAddresses, factoryBlocks, 50000);
     logger.info(`Inital pool count: ${Object.keys(pools).length}`);
 
@@ -52,8 +54,8 @@ export const main = async () => {
     let e = new Date();
     logger.info(`Batch reserve call took: ${(e - s) / 1000} seconds`);
 
-    let bundler = new Bundler(PRIVATE_KEY, SIGNING_KEY, HTTPSURL, BOT_ADDRESS);
-    await bundler.setup();
+    // let bundler = new Bundler(PRIVATE_KEY, SIGNING_KEY, HTTPSURL, BOT_ADDRESS);
+    // await bundler.setup();
 
     let eventEmitter = new EventEmitter();
 
@@ -101,3 +103,5 @@ export const main = async () => {
         }
     });
 };
+
+main();

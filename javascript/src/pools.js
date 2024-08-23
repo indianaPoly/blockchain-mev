@@ -8,12 +8,10 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import cliProgress from 'cli-progress';
 
-import { logger } from './constants.js';
-
 const Erc20Abi = ['function decimals() external view returns (uint8)'];
 
 const V3FactoryAbi = [
-    'event PoolCreated(address indexed token0, address indexed token1, uint24 indexed fee, address pool)',
+    'event PoolCreated(address indexed token0, address indexed token1, uint24 indexed fee, int24 tickSpacing, address pool)',
 ];
 
 const DexVariant = {
@@ -151,22 +149,21 @@ export const loadAllPoolsFromV3 = async (httpsUrl, factoryAddresses, fromBlocks,
                         decimals1 = await token1Contract.decimals();
                         decimals[token1] = decimals1;
                     }
-                } catch (_) {
-                    logger.warn(`Check if tokens: ${token0} / ${token1} still exist`);
+
+                    // 풀 정보를 기반으로 하여 새로운 객체를 생성합니다.
+                    let pool = new Pool(
+                        event.args[4], // pool address
+                        DexVariant.UniswapV3,
+                        token0,
+                        token1,
+                        decimals0,
+                        decimals1,
+                        fee
+                    );
+                    pools[event.args[4]] = pool;
+                } catch {
                     continue;
                 }
-
-                // 풀 정보를 기반으로 하여 새로운 객체를 생성합니다.
-                let pool = new Pool(
-                    event.args[3], // pool address
-                    DexVariant.UniswapV3,
-                    token0,
-                    token1,
-                    decimals0,
-                    decimals1,
-                    fee
-                );
-                pools[event.args[3]] = pool;
             }
 
             progress.update(j + 1);

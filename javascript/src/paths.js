@@ -1,13 +1,10 @@
 /** @format */
 
-import { ethers } from 'ethers';
 import cliProgress from 'cli-progress';
 
 import { logger } from './constants.js';
-import { Path } from './bundler';
+import { Path } from './bundler.js';
 import { UniswapV3Simulator } from './simulators.js';
-
-import UNISWAP_V3_POOL_ABI from './abi/UniswapV3Pool.json';
 
 const range = (start, stop, step) => {
     let loopCnt = Math.ceil((stop - start) / step);

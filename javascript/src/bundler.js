@@ -2,10 +2,10 @@
 
 import { ethers, Wallet } from 'ethers';
 import { FlashbotsBundleProvider } from '@flashbots/ethers-provider-bundle';
-import uuid from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 
 import { PRIVATE_RELAY } from './constants.js';
-import BOT_ABI from './abi/V2ArbBot.json';
+import BOT_ABI from '../abi/ArbBot.json' assert { type: 'json' };
 
 export class Path {
     constructor(router, tokenIn, tokenOut) {
@@ -57,7 +57,7 @@ export class Bundler {
 
     // 번들을 블록체인에 보냄 및 특정 블록에 포함
     sendBundle = async (bundle, blockNumber) => {
-        const replacementUuid = uuid.v4();
+        const replacementUuid = uuidv4();
         const signedBundle = await this.flashbots.signBundle(bundle);
         const targetBlock = blockNumber + 1;
         const simulation = await this.flashbots.simulate(signedBundle, blockNumber);
