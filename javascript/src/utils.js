@@ -1,6 +1,6 @@
 /** @format */
 
-import { ethers } from 'hardhat';
+import hre from 'hardhat';
 
 export const calculateNextBlockBaseFee = (block) => {
     let baseFee = BigInt(block.baseFeePerGas);
@@ -43,7 +43,7 @@ export const estimateNextBlockGas = async () => {
 };
 
 export const getTouchedPoolReserves = async (provider, blockNumber) => {
-    const swapEventSignature = ethers.id('Swap(address,address,int256,int256,uint160,uint128,int24)');
+    const swapEventSignature = hre.ethers.id('Swap(address,address,int256,int256,uint160,uint128,int24)');
     const filter = {
         fromBlock: blockNumber,
         toBlock: blockNumber,
