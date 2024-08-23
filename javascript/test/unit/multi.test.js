@@ -1,9 +1,10 @@
 /** @format */
 
-import { ethers } from 'ethers';
+// 유동성을 잘가져오는 것을 확인
 import dotenv from 'dotenv';
 
 import { loadAllPoolsFromV3 } from '../../src/pools.js';
+import { batchGetUniswapV3Reserves } from '../../src/multi.js';
 
 dotenv.config();
 const exec = async () => {
@@ -14,7 +15,9 @@ const exec = async () => {
 
     const pools = await loadAllPoolsFromV3(HTTPSURL, [MOCKFACTORYADDRESS], [MOCKBLOCKNUMBER], CHUNK);
 
-    console.log(pools);
+    if (pools) {
+        await batchGetUniswapV3Reserves(HTTPSURL, Object.keys(pools));
+    }
 };
 
 exec();
