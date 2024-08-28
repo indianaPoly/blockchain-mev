@@ -1,6 +1,7 @@
 /** @format */
 
 import hre from 'hardhat';
+import axios from 'axios';
 
 export const calculateNextBlockBaseFee = (block) => {
     let baseFee = BigInt(block.baseFeePerGas);
@@ -50,7 +51,7 @@ export const getTouchedPoolReserves = async (provider, blockNumber) => {
         topics: [swapEventSignature],
     };
 
-    let abiCoder = new ethers.AbiCoder();
+    let abiCoder = new hre.ethers.AbiCoder();
     let logs = await provider.getLogs(filter);
     let reserves = {};
 
