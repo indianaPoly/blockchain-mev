@@ -33,6 +33,18 @@ class Pool {
     cacheRow() {
         return [this.address, this.version, this.token0, this.token1, this.decimals0, this.decimals1, this.fee];
     }
+
+    toObject() {
+        return {
+            address: this.address,
+            version: this.version,
+            token0: this.token0,
+            token1: this.token1,
+            decimals0: this.decimals0,
+            decimals1: this.decimals1,
+            fee: this.fee,
+        };
+    }
 }
 
 const range = (start, stop, step) => {

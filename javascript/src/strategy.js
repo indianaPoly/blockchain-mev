@@ -48,10 +48,20 @@ export const main = async () => {
     let s = new Date();
     // 경로에서 생성된 풀만 남기고 나머지를 제거, 그리고 초기 유동성 정보를 한번에 가져옴
     let reserves = await processPoolsInParallel(Object.keys(pools));
-    console.log(reserves);
     let e = new Date();
     // 리저브 정보를 가져오는데 걸리는 시간을 측정함
     logger.info(`Batch reserve call took: ${(e - s) / 1000} seconds`);
+
+    // pool에 대한 정보와 reserve에 대한 정보를 동시에 가지는 객체가 존재
+    let poolANDreserve = {};
+    Object.keys(pools).forEach((poolAddress) => {
+        if (reserves[poolAddress]) {
+            poolANDreserve[poolAddress] = {
+                ...pools[poolAddress].toObject(),
+                ...reserves[poolAddress],
+            };
+        }
+    });
 
     let eventEmitter = new EventEmitter();
 
@@ -60,6 +70,7 @@ export const main = async () => {
 
     // let bundler = new Bundler(PRIVATE_KEY, SIGNING_KEY, HTTPSURL, BOT_ADDRESS);
     // await bundler.setup();
+    console.log(poolANDreserve);
 
     eventEmitter.on('event', async (event) => {
         if (event.type === 'block') {
@@ -70,22 +81,31 @@ export const main = async () => {
             let touchedReserves = await getTouchedPoolReserves(provider, blockNumber);
             let touchedPools = [];
             for (let address in touchedReserves) {
-                let reserve = touchedReserves[address];
-                reserves[address] = reserve;
+                let touchedReserve = touchedReserves[address];
+                // 해당 정보에 대해서 pool 및 address에 대한 정보가 있으면
+                if (poolANDreserve[address]) {
+                    poolANDreserve[address] = {
+                        ...poolANDreserve[address],
+                        ...touchedReserve,
+                    };
+                }
+
                 touchedPools.push(address);
             }
 
             // 수익이 발생할 가능성이 있는 경로를 spreads에 기록
             let spreads = {};
             for (let idx = 0; idx < Object.keys(paths).length; idx++) {
+                // path 중에서 이벤트가 발생한 풀이 있는지 확인함.
                 let path = paths[idx];
                 let touchedPath = touchedPools.reduce((touched, pool) => {
                     return touched + (path.hasPool(pool) ? 1 : 0);
                 }, 0);
 
-                // 시뮬레이션 진행
+                // 이벤트가 발생한 풀이 1개라도 존재한다면 아래 함수를 실행
                 if (touchedPath > 0) {
-                    let priceQuote = path.simulateV3Path(1, reserves);
+                    // 해당 로직에 대한 전략을 고안해야됩니다.
+                    let priceQuote = path.simulateV3Path(1, poolANDreserve);
                     let spread = (priceQuote / 10 ** usdcDecimals - 1) * 100;
                     if (spread > 0) {
                         spreads[idx] = spread;
