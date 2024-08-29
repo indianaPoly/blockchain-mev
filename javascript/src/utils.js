@@ -45,27 +45,37 @@ export const estimateNextBlockGas = async () => {
 
 export const getTouchedPoolReserves = async (provider, blockNumber) => {
     const swapEventSignature = hre.ethers.id('Swap(address,address,int256,int256,uint160,uint128,int24)');
+
+    // 필터 객체 생성
     const filter = {
         fromBlock: blockNumber,
         toBlock: blockNumber,
         topics: [swapEventSignature],
     };
 
-    let abiCoder = new hre.ethers.AbiCoder();
+    const abi = [
+        'event Swap(address indexed sender, address indexed recipient, int256 amount0, int256 amount1, uint160 sqrtPriceX96, uint128 liquidity, int24 tick)',
+    ];
+
+    // Interface 객체 생성
+    const iface = new hre.ethers.Interface(abi);
+
     let logs = await provider.getLogs(filter);
     let reserves = {};
 
     for (let log of logs) {
         let address = log.address;
-        let parsedData = abiCoder.decode(
-            ['address', 'address', 'int256', 'int256', 'uint160', 'uint128', 'int24'],
-            log.data
-        );
-        reserves[address] = {
-            sqrtPriceX96: parsedData[4],
-            liquidity: parsedData[5],
-            fee: null, // 수수료 정보는 별도로 유지해야 함
-        };
+        try {
+            let parsedLog = iface.parseLog(log);
+
+            reserves[address] = {
+                sqrtPriceX96: parsedLog.args[4], // sqrtPriceX96
+                liquidity: parsedLog.args[5], // liquidity
+                tick: parsedLog.args[6],
+            };
+        } catch {
+            continue;
+        }
     }
 
     return reserves;
