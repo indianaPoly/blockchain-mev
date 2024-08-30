@@ -16,7 +16,7 @@ export const getUniswapV3Reserves = async (httpsUrl, poolAddresses, prefix) => {
     progress.start(poolAddresses.length);
 
     const provider = new ethers.JsonRpcProvider(httpsUrl);
-    const reserves = {};
+    let reserves = {};
 
     let count = 0;
     for (const address of poolAddresses) {
@@ -34,6 +34,7 @@ export const getUniswapV3Reserves = async (httpsUrl, poolAddresses, prefix) => {
             count++;
             progress.update(count);
         } catch (err) {
+            console.log(err);
             count++;
             progress.update(count);
             continue;
@@ -44,11 +45,17 @@ export const getUniswapV3Reserves = async (httpsUrl, poolAddresses, prefix) => {
     return reserves;
 };
 
-process.on('message', async (message) => {
-    const { httpsUrl, poolAddresses, prefix } = message;
-    const reserves = await getUniswapV3Reserves(httpsUrl, poolAddresses, prefix);
+process.on('message', async (msg) => {
+    if (msg === 'start') {
+        process.send('ready');
+    } else {
+        console.log('부모가 보낸 메세지', msg);
 
-    // 결과를 부모 프로세스에 전송 (선택 사항)
-    process.send({ reserves });
-    process.exit(0);
+        const { httpsUrl, poolAddresses, prefix } = msg;
+        const reserves = await getUniswapV3Reserves(httpsUrl, poolAddresses, prefix);
+
+        process.send({ type: 'data', data: reserves }, () => {
+            process.exit(0); // 전송이 완료된 후 종료
+        });
+    }
 });

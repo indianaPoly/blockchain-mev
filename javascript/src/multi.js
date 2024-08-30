@@ -10,11 +10,17 @@ const createChildProcess = (addresses, httpsUrl, prefix) => {
         const child = fork('javascript/src/child.js');
         let results = {};
 
-        child.on('message', (message) => {
-            if (message.reserves) {
-                // 문자열을 다시 BigInt로 변환
+        child.on('message', (msg) => {
+            // 메시지 구조를 출력하여 확인
+            console.log('Received message from child:', msg);
+
+            if (msg === 'ready') {
+                child.send({ httpsUrl, poolAddresses: addresses, prefix });
+            } else {
+                console.log('Received data from child:', msg.data);
+
                 const formattedReserves = Object.fromEntries(
-                    Object.entries(message.reserves).map(([key, value]) => [
+                    Object.entries(msg.data).map(([key, value]) => [
                         key,
                         {
                             sqrtPriceX96: BigInt(value.sqrtPriceX96),
@@ -23,7 +29,7 @@ const createChildProcess = (addresses, httpsUrl, prefix) => {
                         },
                     ])
                 );
-                results = { ...results, ...formattedReserves };
+                results = { ...formattedReserves };
             }
         });
 
@@ -35,7 +41,8 @@ const createChildProcess = (addresses, httpsUrl, prefix) => {
             reject(error);
         });
 
-        child.send({ httpsUrl, poolAddresses: addresses, prefix });
+        // 자식 프로세스를 시작할 때 'start' 메시지 전송
+        child.send('start');
     });
 };
 

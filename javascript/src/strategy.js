@@ -54,6 +54,7 @@ export const main = async () => {
 
     // pool에 대한 정보와 reserve에 대한 정보를 동시에 가지는 객체가 존재
     let poolANDreserve = {};
+
     Object.keys(pools).forEach((poolAddress) => {
         if (reserves[poolAddress]) {
             poolANDreserve[poolAddress] = {
@@ -62,6 +63,7 @@ export const main = async () => {
             };
         }
     });
+    console.log(poolANDreserve);
 
     let eventEmitter = new EventEmitter();
 
@@ -70,7 +72,6 @@ export const main = async () => {
 
     // let bundler = new Bundler(PRIVATE_KEY, SIGNING_KEY, HTTPSURL, BOT_ADDRESS);
     // await bundler.setup();
-    console.log(poolANDreserve);
 
     eventEmitter.on('event', async (event) => {
         if (event.type === 'block') {
