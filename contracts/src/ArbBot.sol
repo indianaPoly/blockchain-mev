@@ -27,9 +27,10 @@ contract ArbBot is IFlashLoanRecipient {
     }
 
     // 잔여 토큰에 대해서 소유자에게 반환하는 기능
-    // 소유자가 아닌 경웅에는 트랜젝션이 실패
+    // 소유자가 아닌 경우에는 트랜젝션이 실패
     function recoverToken(address token) public payable {
         require(msg.sender == owner, "not owner");
+        // 1 wei만 남겨두고 나머지를 transfer를 진행
         IERC20(token).transfer(
             msg.sender,
             IERC20(token).balanceOf(address(this)) - 1
