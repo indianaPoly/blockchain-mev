@@ -1,5 +1,5 @@
 /** @format */
-
+import { ethers } from 'ethers';
 import cliProgress from 'cli-progress';
 
 import { logger } from './constants.js';
@@ -42,7 +42,7 @@ export class ArbPath {
 
     simulateV3Path = (amountIn, reserves) => {
         let tokenInDecimals = this.zeroForOne1 ? this.pool1.decimals0 : this.pool1.decimals1;
-        let amountOut = amountIn * 10 ** tokenInDecimals;
+        let amountOut = ethers.parseUnits(amountIn.toString(), tokenInDecimals);
 
         let sim = new UniswapV3Simulator();
         let nhop = this.nhop();
@@ -52,7 +52,6 @@ export class ArbPath {
             let zeroForOne = this[`zeroForOne${i + 1}`];
 
             let { sqrtPriceX96, liquidity, fee } = reserves[pool.address];
-
             amountOut = sim.getAmountOut(amountOut, sqrtPriceX96, liquidity, fee);
         }
 
