@@ -40,7 +40,7 @@ export const getUniswapV3Reserves = async (httpsUrl, poolAddresses) => {
  */
 export const batchGetUniswapV3Reserves = async (httpsUrl, poolAddresses) => {
     // 한 번에 보낼 수 있는 요청 수에 한계가 있으므로, 요청 크기를 200으로 설정합니다.
-    // 일반적으로 노드 서비스에서 7~10개의 배치당 1~2초가 소요됩니다.
+    // 일반적으로 노드 서비스에서 7~10개의 배치당 1~2초가 소요됩니다. 
 
     let poolsCnt = poolAddresses.length; // 풀 주소의 총 개수를 가져
     let batch = Math.ceil(poolsCnt / 200); // 해당 코드는 한 번에 200개의 풀 정보를 조회할 수 있도록 설정함.
