@@ -4,7 +4,7 @@
 import { ethers } from 'ethers';
 import cliProgress from 'cli-progress';
 
-import UNISWAP_V3_POOL_ABI from '../abi/UniswapV3Pool.json' assert { type: 'json' };
+import UNISWAP_V3_POOL_ABI from '../../abi/UniswapV3Pool.json' assert { type: 'json' };
 
 export const getUniswapV3Reserves = async (httpsUrl, poolAddresses, prefix) => {
   const progress = new cliProgress.SingleBar(

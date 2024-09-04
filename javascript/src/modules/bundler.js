@@ -5,7 +5,7 @@ import { FlashbotsBundleProvider } from '@flashbots/ethers-provider-bundle';
 import { v4 as uuidv4 } from 'uuid';
 
 import { PRIVATE_RELAY } from './constants.js';
-import BOT_ABI from '../abi/ArbBot.json' assert { type: 'json' };
+import BOT_ABI from '../../abi/ArbBot.json' assert { type: 'json' };
 
 export class Path {
   constructor(router, tokenIn, tokenOut) {

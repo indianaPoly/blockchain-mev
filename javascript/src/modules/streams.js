@@ -1,7 +1,7 @@
 /** @format */
 
 import { ethers } from 'ethers';
-import { calculateNextBlockBaseFee, estimateNextBlockGas } from './utils.js';
+import { calculateNextBlockBaseFee, estimateNextBlockGas } from '../utils.js';
 
 export const streamNewBlocks = (wssUrl, eventEmitter) => {
   const wss = new ethers.WebSocketProvider(wssUrl);
