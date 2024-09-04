@@ -1,6 +1,6 @@
-import { loadAllPoolsFromV3 } from '../modules/pools.js';
-import { generateTriangularPaths } from '../modules/paths.js';
-import { processPoolsInParallel } from '../modules/multi.js';
+import { loadAllPoolsFromV3 } from '../pools.js';
+import { generateTriangularPaths } from '../paths.js';
+import { processPoolsInParallel } from '../multi.js';
 
 /**
  * 시작 토큰에 대한 주소를 넣게 되면 그에 따른 pool에 대한 정보와 가격정보도 호출하는 함수

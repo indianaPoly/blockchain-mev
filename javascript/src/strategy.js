@@ -10,7 +10,7 @@ import { processPoolsInParallel } from './multi.js';
 import { generateTriangularPaths } from './paths.js';
 import { loadAllPoolsFromV3 } from './pools.js';
 import { streamNewBlocks } from './streams.js';
-import { getTouchedPoolReserves } from '../utils.js';
+import { getTouchedPoolReserves } from './modules/utils.js';
 
 dotenv.config();
 export const main = async () => {
